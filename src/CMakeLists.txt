@@ -70,6 +70,7 @@ set(konsoleprivate_SRCS ${sessionadaptors_SRCS}
                         HistorySizeDialog.cpp
                         HistorySizeWidget.cpp
                         IncrementalSearchBar.cpp
+                        MultiTerminalDisplayManager.cpp
                         KeyBindingEditor.cpp
                         KeyboardTranslator.cpp
                         KeyboardTranslatorManager.cpp

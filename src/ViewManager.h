@@ -27,6 +27,7 @@
 
 // Konsole
 #include "Profile.h"
+#include "MultiTerminalDisplayManager.h"
 
 class KActionCollection;
 class KConfigGroup;
@@ -174,6 +175,13 @@ public:
     SessionController *activeViewController() const;
 
     /**
+      * Creates a new terminal display and updates the internal status of the
+      * ViewManager.
+      * Wrapper around the createTerminalDisplay for external clients.
+      */
+    TerminalDisplay* createAndSetupTerminalDisplay(Session* session);
+
+    /**
      * Session management
      */
     void saveSessions(KConfigGroup &group);
@@ -228,6 +236,13 @@ Q_SIGNALS:
      * just a single view.
      */
     void splitViewToggle(bool multipleViews);
+
+    /**
+      * Emitted when there is more than one multi-terminal open.
+      * @param multiTerminals True if there is more than one multi-terminal open for the current
+      * view
+      */
+    void closeMultiTerminalToggle(bool multiTerminals);
 
     /**
      * Emitted when menu bar visibility changes because a profile that requires so is
@@ -316,6 +331,18 @@ private Q_SLOTS:
     void expandActiveContainer();
     void shrinkActiveContainer();
 
+    void multiTerminalHorizontal();
+    void multiTerminalVertical();
+    void multiTerminalClose();
+
+    void moveToLeftMtd();
+    void moveToTopMtd();
+    void moveToRightMtd();
+    void moveToBottomMtd();
+
+    // Moves the focus from the current widget to the closest one in the given direction
+    void moveMtdFocus(MultiTerminalDisplayManager::Directions direction);
+
     // called when the "Detach View" menu item is selected
     void detachActiveView();
     void updateDetachViewState();
@@ -374,10 +401,16 @@ private Q_SLOTS:
 
     void detachView(TabbedViewContainer *container, QWidget *view);
 
+    QList<TerminalDisplay *> getTerminalsFromContainer(TabbedViewContainer *container) const;
+
 private:
     Q_DISABLE_COPY(ViewManager)
 
     void createView(Session *session, TabbedViewContainer *container, int index);
+
+    // Creates a multi-terminal view.
+    void createMultiTerminalView(Qt::Orientation orientation);
+
     static const ColorScheme *colorSchemeForProfile(const Profile::Ptr profile);
 
     void setupActions();
@@ -416,6 +449,8 @@ private:
     NewTabBehavior _newTabBehavior;
     int _managerId;
     static int lastManagerId;
+
+    MultiTerminalDisplayManager* _mtdManager;
 };
 }
 

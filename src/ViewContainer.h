@@ -78,13 +78,13 @@ public:
     ~TabbedViewContainer() Q_DECL_OVERRIDE;
 
     /** Adds a new view to the container widget */
-    void addView(QWidget *view, ViewProperties *navigationItem, int index = -1);
+    void addView(MultiTerminalDisplay *view, ViewProperties *navigationItem, int index = -1);
 
     /** Removes a view from the container */
     void removeView(QWidget *view);
 
     /** Returns the ViewProperties instance associated with a particular view in the container */
-    ViewProperties *viewProperties(QWidget *view) const;
+    ViewProperties *viewProperties(MultiTerminalDisplay *view) const;
     void setTabActivity(int index, bool activity);
 
     void updateTitle(ViewProperties *item);
@@ -137,6 +137,8 @@ public:
     void openTabContextMenu(const QPoint &point);
     void setNavigationVisibility(ViewManager::NavigationVisibility navigationVisibility);
     void moveTabToWindow(int index, QWidget *window);
+    MultiTerminalDisplay *multiTerminalDisplay(int index);
+
 Q_SIGNALS:
     /** Emitted when the container has no more children */
     void empty(TabbedViewContainer *container);
@@ -174,7 +176,7 @@ Q_SIGNALS:
 
 protected:
     /** Returns the widgets which are associated with a particular navigation item */
-    QList<QWidget *> widgetsForItem(ViewProperties *item) const;
+    QList<MultiTerminalDisplay *> widgetsForItem(ViewProperties *item) const;
 
     /**
      * Rearranges the order of widgets in the container.
@@ -193,7 +195,7 @@ private Q_SLOTS:
 private:
     void forgetView(QWidget *view);
 
-    QHash<QWidget *, ViewProperties *> _navigation;
+    QHash<MultiTerminalDisplay*, ViewProperties*> _navigation;
     ViewManager *_connectedViewManager;
     QMenu *_contextPopupMenu;
     QToolButton *_newTabButton;

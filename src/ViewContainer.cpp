@@ -46,6 +46,7 @@
 #include "KonsoleSettings.h"
 #include "SessionController.h"
 #include "DetachableTabBar.h"
+#include "MultiTerminalDisplayManager.h"
 
 // TODO Perhaps move everything which is Konsole-specific into different files
 
@@ -151,7 +152,7 @@ TabbedViewContainer::~TabbedViewContainer()
 
 void TabbedViewContainer::moveTabToWindow(int index, QWidget *window)
 {
-    const int id = viewProperties(widget(index))->identifier();
+    const int id = viewProperties(multiTerminalDisplay(index))->identifier();
     // This one line here will be removed as soon as I finish my new split handling.
     // it's hacky but it works.
     const auto widgets = window->findChildren<TabbedViewContainer*>();
@@ -162,6 +163,11 @@ void TabbedViewContainer::moveTabToWindow(int index, QWidget *window)
             removeView(widget(index));
         }
     }
+}
+
+MultiTerminalDisplay* TabbedViewContainer::multiTerminalDisplay(int index)
+{
+    return qobject_cast<MultiTerminalDisplay*>(widget(index));
 }
 
 void TabbedViewContainer::konsoleConfigChanged()
@@ -216,8 +222,8 @@ void TabbedViewContainer::moveActiveView(MoveDirection direction)
     const int currentIndex = indexOf(currentWidget());
     int newIndex = direction  == MoveViewLeft ? qMax(currentIndex - 1, 0) : qMin(currentIndex + 1, count() - 1);
 
-    auto swappedWidget = widget(newIndex);
-    auto currentWidget = widget(currentIndex);
+    auto swappedWidget = qobject_cast<MultiTerminalDisplay*>(widget(newIndex));
+    auto currentWidget = qobject_cast<MultiTerminalDisplay*>(widget(currentIndex));
     auto swappedContext = _navigation[swappedWidget];
     auto currentContext = _navigation[currentWidget];
 
@@ -231,7 +237,7 @@ void TabbedViewContainer::moveActiveView(MoveDirection direction)
     setCurrentIndex(newIndex);
 }
 
-void TabbedViewContainer::addView(QWidget *view, ViewProperties *item, int index)
+void TabbedViewContainer::addView(MultiTerminalDisplay *view, ViewProperties *item, int index)
 {
     if (index == -1) {
         addTab(view, item->icon(), item->title());
@@ -239,6 +245,7 @@ void TabbedViewContainer::addView(QWidget *view, ViewProperties *item, int index
         insertTab(index, view, item->icon(), item->title());
     }
 
+    // MultiTerminalDisplay is added here.
     _navigation[view] = item;
     connect(item, &Konsole::ViewProperties::titleChanged, this,
             &Konsole::TabbedViewContainer::updateTitle);
@@ -262,7 +269,8 @@ void TabbedViewContainer::viewDestroyed(QObject *view)
 
 void TabbedViewContainer::forgetView(QWidget *view)
 {
-    _navigation.remove(view);
+    // TODO: Remove this cast if possible.
+    _navigation.remove(qobject_cast<MultiTerminalDisplay*>(view));
     emit viewRemoved(view);
     if (count() == 0) {
         emit empty(this);
@@ -296,13 +304,14 @@ void TabbedViewContainer::activatePreviousView()
     setCurrentIndex(index == 0 ? count() - 1 : index - 1);
 }
 
-ViewProperties *TabbedViewContainer::viewProperties(QWidget *view) const
+ViewProperties *TabbedViewContainer::viewProperties(MultiTerminalDisplay *view) const
 {
+    // TODO: Remove this cast if possible.
     Q_ASSERT(_navigation.contains(view));
     return _navigation[view];
 }
 
-QList<QWidget *> TabbedViewContainer::widgetsForItem(ViewProperties *item) const
+QList<MultiTerminalDisplay*> TabbedViewContainer::widgetsForItem(ViewProperties *item) const
 {
     return _navigation.keys(item);
 }
@@ -326,7 +335,7 @@ void TabbedViewContainer::tabDoubleClicked(int index)
 void TabbedViewContainer::renameTab(int index)
 {
     if (index != -1) {
-        _navigation[widget(index)]->rename();
+        _navigation[multiTerminalDisplay(index)]->rename();
     }
 }
 
@@ -352,7 +361,7 @@ void TabbedViewContainer::openTabContextMenu(const QPoint &point)
 #endif
 
     // Add the read-only action
-    auto controller = _navigation[widget(_contextMenuTabIndex)];
+    auto controller = _navigation[multiTerminalDisplay(_contextMenuTabIndex)];
     auto sessionController = qobject_cast<SessionController*>(controller);
 
     if (sessionController != nullptr) {
@@ -445,9 +454,10 @@ void TabbedViewContainer::updateIcon(ViewProperties *item)
 }
 
 void TabbedViewContainer::closeTerminalTab(int idx) {
+    qFatal("Implementation missing");
     auto currWidget = widget(idx);
-    auto controller = qobject_cast<SessionController *>(_navigation[currWidget]);
-    controller->closeSession();
+    //auto controller = qobject_cast<SessionController *>(_navigation[currWidget]);
+    //controller->closeSession();
 }
 
 ViewManager *TabbedViewContainer::connectedViewManager()
