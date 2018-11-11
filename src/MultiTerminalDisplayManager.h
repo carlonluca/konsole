@@ -347,7 +347,8 @@ private:
      */
     void splitMultiTerminalDisplay(MultiTerminalDisplay* container
                                  , MultiTerminalDisplay* widget1, MultiTerminalDisplay* widget2
-                                 , Qt::Orientation orientation);
+                                 , Qt::Orientation orientation
+                                 , int size);
 
     /**
      * Assigns the focus to a non-specified leaf which belongs to the

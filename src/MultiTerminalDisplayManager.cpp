@@ -237,8 +237,8 @@ void MultiTerminalDisplayManager::addTerminalDisplay(TerminalDisplay* terminalDi
     , Qt::Orientation orientation)
 {
     // Create two new MTD, one for the existing TD and one for the new TD
-    MultiTerminalDisplay* mtd1 = new MultiTerminalDisplay(currentMultiTerminalDisplay);
-    MultiTerminalDisplay* mtd2 = new MultiTerminalDisplay(currentMultiTerminalDisplay);
+    MultiTerminalDisplay* mtd1 = new MultiTerminalDisplay;
+    MultiTerminalDisplay* mtd2 = new MultiTerminalDisplay;
 
     addTerminalDisplay(terminalDisplay, session, currentMultiTerminalDisplay, orientation, mtd1, mtd2);
 }
@@ -257,6 +257,12 @@ void MultiTerminalDisplayManager::addTerminalDisplay(TerminalDisplay* terminalDi
     _trees.insert(mtd1, mtdTree);
     _trees.insert(mtd2, mtdTree);
 
+    // Get current size of TD. If impossible to determine, use arbitrary size.
+    QList<int> sizes = currentMultiTerminalDisplay->sizes();
+    int size = 200;
+    if (sizes.isEmpty())
+        size = sizes.at(0);
+
     // Current TerminalDisplay
     TerminalDisplay* currentTd = _mtdContent[currentMultiTerminalDisplay];
     _mtdContent.remove(currentMultiTerminalDisplay);
@@ -264,7 +270,7 @@ void MultiTerminalDisplayManager::addTerminalDisplay(TerminalDisplay* terminalDi
         combineMultiTerminalDisplayAndTerminalDisplay(mtd1, currentTd);
     if (terminalDisplay)
         combineMultiTerminalDisplayAndTerminalDisplay(mtd2, terminalDisplay);
-    splitMultiTerminalDisplay(currentMultiTerminalDisplay, mtd1, mtd2, orientation);
+    splitMultiTerminalDisplay(currentMultiTerminalDisplay, mtd1, mtd2, orientation, size);
 
     if (terminalDisplay)
         terminalDisplay->setFocus();
@@ -559,13 +565,16 @@ void MultiTerminalDisplayManager::combineMultiTerminalDisplayAndTerminalDisplay(
 void MultiTerminalDisplayManager::splitMultiTerminalDisplay(MultiTerminalDisplay* container
                                                  , MultiTerminalDisplay* widget1
                                                  , MultiTerminalDisplay* widget2
-                                                 , Qt::Orientation orientation)
+                                                 , Qt::Orientation orientation
+                                                 , int size)
 {
+    qInfo() << "Visible:" << container->isVisible();
+
     // Get the sizes
     QList<int> sizes = container->sizes();
     QList<int> childSizes;
-    childSizes.append(sizes.at(0) / 2);
-    childSizes.append(sizes.at(0) / 2);
+    childSizes.append(size/2);
+    childSizes.append(size/2);
 
     // Split
     container->setOrientation(orientation);
