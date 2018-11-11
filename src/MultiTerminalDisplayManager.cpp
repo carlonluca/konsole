@@ -316,7 +316,7 @@ MultiTerminalDisplay* MultiTerminalDisplayManager::removeTerminalDisplay(MultiTe
             int newSiblingIndex = newParent->indexOf(newSibling);
             QSize newSiblingSize = newSibling->size();
             // Remove the parent as it will be replaced by the sibling
-            parent->setParent(NULL);
+            parent->setParent(nullptr);
             // Respect the position of the existing node (newSiblingIndex)
             newParent->insertWidget(1 - newSiblingIndex ,sibling);
             sibling->setParent(newParent);

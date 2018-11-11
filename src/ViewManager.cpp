@@ -64,7 +64,6 @@ ViewManager::ViewManager(QObject *parent, KActionCollection *collection) :
 {
     // create main view area
     _viewSplitter = new ViewSplitter(nullptr);
-    _viewSplitter->setStyleSheet(QStringLiteral("background-color:black;"));
 
     KAcceleratorManager::setNoAccel(_viewSplitter);
 
