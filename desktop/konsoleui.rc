@@ -19,10 +19,19 @@
             <Menu name="view-split"><text>Split View</text>
                 <Action name="split-view-left-right"/>
                 <Action name="split-view-top-bottom"/>
+                <Separator />
                 <Action name="close-active-view"/>
                 <Action name="close-other-views"/>
+                <Separator />
                 <Action name="expand-active-view"/>
                 <Action name="shrink-active-view"/>
+            </Menu>
+            <Separator/>
+            <Menu name="multi-terminal"><text>Multi Terminal</text>
+                <Action name="multi-terminal-hor"/>
+                <Action name="multi-terminal-ver"/>
+                <Separator />
+                <Action name="multi-terminal-close"/>
             </Menu>
             <Separator/>
             <Action name="detach-view"/>

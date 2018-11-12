@@ -36,7 +36,15 @@ class Session;
 class TerminalDisplay;
 class ViewManager;
 
-typedef QSplitter MultiTerminalDisplay;
+//typedef QSplitter MultiTerminalDisplay;
+
+class MultiTerminalDisplay : public QSplitter
+{
+    Q_OBJECT
+public:
+    MultiTerminalDisplay(QWidget* parent = nullptr) : QSplitter(parent) {}
+    ~MultiTerminalDisplay() override;
+};
 
 // TODO: method to remove all MTDs (root included) to be called e.g. when a tab is closed
 // TODO: implement "Close terminal" on the right click

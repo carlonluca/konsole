@@ -175,7 +175,7 @@ void MainWindow::rememberMenuAccelerators()
 // can then be redefined there to exclude the standard accelerators
 void MainWindow::removeMenuAccelerators()
 {
-    foreach (QAction *menuItem, menuBar()->actions()) {
+	foreach (QAction *menuItem, menuBar()->actions()) {
         menuItem->setText(menuItem->text().replace(QLatin1Char('&'), QString()));
     }
 }
