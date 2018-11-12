@@ -42,6 +42,12 @@
 
 namespace Konsole
 {
+
+MultiTerminalDisplay::~MultiTerminalDisplay()
+{
+    qDebug() << Q_FUNC_INFO;
+}
+
 QSet< MultiTerminalDisplay* > MultiTerminalDisplayTree::getLeaves() const
 {
     return _leaves;
@@ -568,8 +574,6 @@ void MultiTerminalDisplayManager::splitMultiTerminalDisplay(MultiTerminalDisplay
                                                  , Qt::Orientation orientation
                                                  , int size)
 {
-    qInfo() << "Visible:" << container->isVisible();
-
     // Get the sizes
     QList<int> sizes = container->sizes();
     QList<int> childSizes;
@@ -582,6 +586,5 @@ void MultiTerminalDisplayManager::splitMultiTerminalDisplay(MultiTerminalDisplay
     container->addWidget(widget2);
     container->setSizes(childSizes);
 }
-
 
 }

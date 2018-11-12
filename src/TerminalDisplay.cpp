@@ -550,6 +550,8 @@ TerminalDisplay::TerminalDisplay(QWidget* parent)
 
 TerminalDisplay::~TerminalDisplay()
 {
+    qDebug() << Q_FUNC_INFO;
+
     disconnect(_blinkTextTimer);
     disconnect(_blinkCursorTimer);
 

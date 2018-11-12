@@ -141,6 +141,58 @@ void ViewManager::setupActions()
     QAction *moveViewRightAction = new QAction(i18nc("@action Shortcut entry",
                                                      "Move Tab Right"), this);
 
+    // list of actions that should only be enabled when there are multiple view
+    // containers open
+    QList<QAction*> multiViewOnlyActions;
+    multiViewOnlyActions << nextContainerAction;
+
+    QAction* splitLeftRightAction = new QAction(QIcon::fromTheme(QStringLiteral("view-split-left-right")),
+                                                i18nc("@action:inmenu", "Split View Left/Right"),
+                                                this);
+    splitLeftRightAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_ParenLeft));
+    collection->addAction(QStringLiteral("split-view-left-right"), splitLeftRightAction);
+    connect(splitLeftRightAction , SIGNAL(triggered()) , this , SLOT(splitLeftRight()));
+
+    QAction* splitTopBottomAction = new QAction(QIcon::fromTheme(QStringLiteral("view-split-top-bottom")) ,
+                                                i18nc("@action:inmenu", "Split View Top/Bottom"), this);
+    splitTopBottomAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_ParenRight));
+    collection->addAction(QStringLiteral("split-view-top-bottom"), splitTopBottomAction);
+    connect(splitTopBottomAction , SIGNAL(triggered()) , this , SLOT(splitTopBottom()));
+
+    QAction* closeActiveAction = new QAction(i18nc("@action:inmenu Close Active View", "Close Active") , this);
+    closeActiveAction->setIcon(QIcon::fromTheme(QStringLiteral("view-close")));
+    closeActiveAction->setShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_S));
+    closeActiveAction->setEnabled(false);
+    collection->addAction(QStringLiteral("close-active-view"), closeActiveAction);
+    connect(closeActiveAction , SIGNAL(triggered()) , this , SLOT(closeActiveContainer()));
+
+    multiViewOnlyActions << closeActiveAction;
+
+    QAction* closeOtherAction = new QAction(i18nc("@action:inmenu Close Other Views", "Close Others") , this);
+    closeOtherAction->setShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_O));
+    closeOtherAction->setEnabled(false);
+    collection->addAction(QStringLiteral("close-other-views"), closeOtherAction);
+    connect(closeOtherAction , SIGNAL(triggered()) , this , SLOT(closeOtherContainers()));
+
+    multiViewOnlyActions << closeOtherAction;
+
+    // Expand & Shrink Active View
+    QAction* expandActiveAction = new QAction(i18nc("@action:inmenu", "Expand View") , this);
+    expandActiveAction->setShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_BracketRight));
+    expandActiveAction->setEnabled(false);
+    collection->addAction(QStringLiteral("expand-active-view"), expandActiveAction);
+    connect(expandActiveAction , SIGNAL(triggered()) , this , SLOT(expandActiveContainer()));
+
+    multiViewOnlyActions << expandActiveAction;
+
+    QAction* shrinkActiveAction = new QAction(i18nc("@action:inmenu", "Shrink View") , this);
+    shrinkActiveAction->setShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_BracketLeft));
+    shrinkActiveAction->setEnabled(false);
+    collection->addAction(QStringLiteral("shrink-active-view"), shrinkActiveAction);
+    connect(shrinkActiveAction , SIGNAL(triggered()) , this , SLOT(shrinkActiveContainer()));
+
+    multiViewOnlyActions << shrinkActiveAction;
+
     // Crashes on Mac.
 #if defined(ENABLE_DETACHING)
     QAction *detachViewAction = collection->addAction(QStringLiteral("detach-view"));
@@ -156,6 +208,9 @@ void ViewManager::setupActions()
     connect(detachViewAction, &QAction::triggered, this, &Konsole::ViewManager::detachActiveView);
 #endif
 
+    foreach(QAction* action, multiViewOnlyActions)
+        connect(this , SIGNAL(splitViewToggle(bool)) , action , SLOT(setEnabled(bool)));
+
     // Next / Previous View , Next Container
     collection->addAction(QStringLiteral("next-view"), nextViewAction);
     collection->addAction(QStringLiteral("previous-view"), previousViewAction);
@@ -170,9 +225,9 @@ void ViewManager::setupActions()
         QAction *switchToTabAction = new QAction(i18nc("@action Shortcut entry", "Switch to Tab %1", i + 1), this);
 
         connect(switchToTabAction, &QAction::triggered, this,
-           [this, i]() {
-               switchToView(i);
-           });
+                [this, i]() {
+            switchToView(i);
+        });
         collection->addAction(QStringLiteral("switch-to-tab-%1").arg(i), switchToTabAction);
     }
 
@@ -181,22 +236,20 @@ void ViewManager::setupActions()
                 QIcon::fromTheme(QStringLiteral("view-split-left-right")),
                 i18nc("@action:inmenu", "Split Pane &Vertically"), this);
     multiTerminalVerAction->setEnabled(true);
-    multiTerminalVerAction->setShortcut(QKeySequence(Qt::META + Qt::Key_D));
+    multiTerminalVerAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_D));
     collection->addAction(QStringLiteral("multi-terminal-ver"), multiTerminalVerAction);
     _viewSplitter->addAction(multiTerminalVerAction);
     connect(multiTerminalVerAction, SIGNAL(triggered()), this, SLOT(multiTerminalVertical()));
-
 
     // Menu item for the horizontal split of the multi terminal
     QAction* multiTerminalHorAction = new QAction(
                 QIcon::fromTheme(QStringLiteral("view-split-top-bottom")),
                 i18nc("@action:inmenu", "Split Pane &Horizontally"), this);
     multiTerminalHorAction->setEnabled(true);
-    multiTerminalHorAction->setShortcut(QKeySequence(Qt::META + Qt::CTRL + Qt::Key_D));
+    multiTerminalHorAction->setShortcut(QKeySequence(Qt::ALT + Qt::CTRL + Qt::Key_D));
     collection->addAction(QStringLiteral("multi-terminal-hor"), multiTerminalHorAction);
     _viewSplitter->addAction(multiTerminalHorAction);
     connect(multiTerminalHorAction, SIGNAL(triggered()), this, SLOT(multiTerminalHorizontal()));
-
 
     // Menu item for closing a multi terminal
     QAction* closeMultiTerminalAction = new QAction(
