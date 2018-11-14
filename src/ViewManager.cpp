@@ -449,15 +449,23 @@ void ViewManager::sessionFinished()
     auto *session = qobject_cast<Session *>(sender());
     Q_ASSERT(session);
 
-    // TODO: all multi terminals must be removed as well
-
     // close attached views
-    QList<TerminalDisplay *> children = _viewSplitter->findChildren<TerminalDisplay *>();
+    QList<TerminalDisplay*> children = _viewSplitter->findChildren<TerminalDisplay *>();
 
     foreach (TerminalDisplay *view, children) {
         if (_sessionMap[view] == session) {
             _sessionMap.remove(view);
-            view->deleteLater();
+
+            // Find the MTD containing this TD. This approach assumes the TD is always
+            // a child of the MTD.
+            if (view->parent()) {
+                MultiTerminalDisplay* mtd = qobject_cast<MultiTerminalDisplay*>(view->parent());
+                if (mtd)
+                    _mtdManager->removeTerminalDisplay(mtd);
+            }
+
+            // No need. The TD is a child of the MTD.
+            //view->deleteLater();
         }
     }
 
