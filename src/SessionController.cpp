@@ -533,19 +533,8 @@ void SessionController::setupCommonActions()
 {
     KActionCollection* collection = actionCollection();
 
-    // Close Session
-    QAction* action = collection->addAction(QStringLiteral("close-session"), this, SLOT(closeSession()));
-    if (isKonsolePart()) {
-        action->setText(i18n("&Close Session"));
-    } else {
-        action->setText(i18n("&Close Tab"));
-    }
-
-    action->setIcon(QIcon::fromTheme(QStringLiteral("tab-close")));
-    collection->setDefaultShortcut(action, Konsole::ACCEL + Qt::SHIFT + Qt::Key_W);
-
     // Open Browser
-    action = collection->addAction(QStringLiteral("open-browser"), this, SLOT(openBrowser()));
+    QAction* action = collection->addAction(QStringLiteral("open-browser"), this, SLOT(openBrowser()));
     action->setText(i18n("Open File Manager"));
     action->setIcon(QIcon::fromTheme(QStringLiteral("system-file-manager")));
 

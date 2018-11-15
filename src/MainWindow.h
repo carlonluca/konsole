@@ -134,6 +134,7 @@ protected:
 private Q_SLOTS:
     void newTab();
     void cloneTab();
+    void closeTab();
     void newWindow();
     void showManageProfilesDialog();
     void activateMenuBar();

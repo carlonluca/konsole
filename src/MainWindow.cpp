@@ -344,6 +344,12 @@ void MainWindow::setupActions()
     collection->setDefaultShortcut(menuAction, Konsole::ACCEL + Qt::SHIFT + Qt::Key_Q);
     connect(menuAction, &QAction::triggered, this, &Konsole::MainWindow::close);
 
+    menuAction = collection->addAction(QStringLiteral("close-tab"));
+    menuAction->setIcon(QIcon::fromTheme(QStringLiteral("tab-close")));
+    menuAction->setText(i18nc("@action:inmenu", "&Close Tab"));
+    collection->setDefaultShortcut(menuAction, Konsole::ACCEL + Qt::SHIFT + Qt::Key_W);
+    connect(menuAction, &QAction::triggered, this, &Konsole::MainWindow::closeTab);
+
     // Bookmark Menu
     KActionMenu *bookmarkMenu = new KActionMenu(i18nc("@title:menu", "&Bookmarks"), collection);
     _bookmarkHandler = new BookmarkHandler(collection, bookmarkMenu->menu(), true, this);
@@ -489,6 +495,12 @@ void MainWindow::cloneTab()
         Q_ASSERT(false);
         newTab();
     }
+}
+
+void MainWindow::closeTab()
+{
+    if (_viewManager)
+        _viewManager->removeCurrentTab();
 }
 
 Session *MainWindow::createSession(Profile::Ptr profile, const QString &directory)

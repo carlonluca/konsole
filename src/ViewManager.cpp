@@ -1345,6 +1345,12 @@ QList<TerminalDisplay*> ViewManager::getTerminalsFromContainer(TabbedViewContain
     return _mtdManager->getTerminalDisplays();
 }
 
+void ViewManager::removeCurrentTab()
+{
+    QWidget* w = _viewSplitter->activeContainer()->currentWidget();
+    w->deleteLater();
+}
+
 void ViewManager::setNavigationBehavior(int behavior)
 {
     _newTabBehavior = static_cast<NewTabBehavior>(behavior);

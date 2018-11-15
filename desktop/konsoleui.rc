@@ -10,6 +10,7 @@
             <DefineGroup name="session-operations"/>
             <Separator/>
             <DefineGroup name="session-tab-operations"/>
+            <Action name="close-tab"/>
             <Action name="close-window"/>
         </Menu>
         <Menu name="edit"><text>Edit</text>
