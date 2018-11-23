@@ -236,7 +236,7 @@ void ViewManager::setupActions()
                 QIcon::fromTheme(QStringLiteral("view-split-left-right")),
                 i18nc("@action:inmenu", "Split Pane &Vertically"), this);
     multiTerminalVerAction->setEnabled(true);
-    multiTerminalVerAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_D));
+    multiTerminalVerAction->setShortcut(QKeySequence(Qt::CTRL + Qt::ALT + Qt::Key_V));
     collection->addAction(QStringLiteral("multi-terminal-ver"), multiTerminalVerAction);
     _viewSplitter->addAction(multiTerminalVerAction);
     connect(multiTerminalVerAction, SIGNAL(triggered()), this, SLOT(multiTerminalVertical()));
@@ -246,7 +246,7 @@ void ViewManager::setupActions()
                 QIcon::fromTheme(QStringLiteral("view-split-top-bottom")),
                 i18nc("@action:inmenu", "Split Pane &Horizontally"), this);
     multiTerminalHorAction->setEnabled(true);
-    multiTerminalHorAction->setShortcut(QKeySequence(Qt::ALT + Qt::CTRL + Qt::Key_D));
+    multiTerminalHorAction->setShortcut(QKeySequence(Qt::CTRL + Qt::ALT + Qt::Key_H));
     collection->addAction(QStringLiteral("multi-terminal-hor"), multiTerminalHorAction);
     _viewSplitter->addAction(multiTerminalHorAction);
     connect(multiTerminalHorAction, SIGNAL(triggered()), this, SLOT(multiTerminalHorizontal()));
@@ -255,7 +255,7 @@ void ViewManager::setupActions()
     QAction* closeMultiTerminalAction = new QAction(
                 QIcon::fromTheme(QStringLiteral("view-close")),
                 i18nc("@action:inmenu", "&Close"), this);
-    closeMultiTerminalAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_W));
+    closeMultiTerminalAction->setShortcut(QKeySequence(Qt::CTRL + Qt::ALT + Qt::Key_W));
     collection->addAction(QStringLiteral("multi-terminal-close"), closeMultiTerminalAction);
     _viewSplitter->addAction(closeMultiTerminalAction);
     connect(closeMultiTerminalAction, SIGNAL(triggered()), this, SLOT(multiTerminalClose()));

@@ -139,6 +139,11 @@ MultiTerminalDisplay* MultiTerminalDisplayTree::getSiblingOf(MultiTerminalDispla
 
 MultiTerminalDisplay* MultiTerminalDisplayTree::getParentOf(MultiTerminalDisplay* node)
 {
+    if (!_childToParent.contains(node)) {
+        qWarning() << "No parent";
+        return nullptr;
+    }
+
     return _childToParent[node];
 }
 
