@@ -460,8 +460,11 @@ void ViewManager::sessionFinished()
             // a child of the MTD.
             if (view->parent()) {
                 MultiTerminalDisplay* mtd = qobject_cast<MultiTerminalDisplay*>(view->parent());
-                if (mtd)
-                    _mtdManager->removeTerminalDisplay(mtd);
+                if (mtd) {
+                    // Determine if no children is available.
+                    if (!mtd->count())
+                        _mtdManager->removeTerminalDisplay(mtd);
+                }
             }
 
             // No need. The TD is a child of the MTD.
