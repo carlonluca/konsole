@@ -812,8 +812,6 @@ void ViewManager::createMultiTerminalView(Qt::Orientation orientation)
     MultiTerminalDisplay* containerMtd = qobject_cast<MultiTerminalDisplay*>(_viewSplitter->activeContainer()->currentWidget());
     MultiTerminalDisplay* multiTerminalDisplay = _mtdManager->getFocusedMultiTerminalDisplay(containerMtd);
 
-    qInfo() << "SIZES" << multiTerminalDisplay->sizes();
-
     _mtdManager->addTerminalDisplay(display, session, multiTerminalDisplay, orientation);
 
 
