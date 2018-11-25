@@ -235,7 +235,6 @@ public:
      * \param orientation The orientation of the split
      */
     void addTerminalDisplay(TerminalDisplay* terminalDisplay
-        , Session* session
         , MultiTerminalDisplay* currentMultiTerminalDisplay
         , Qt::Orientation orientation);
 
@@ -337,7 +336,6 @@ private:
      * Private implementation of the addTerminalDisplay method
      */
     void addTerminalDisplay(TerminalDisplay* terminalDisplay
-        , Session* session
         , MultiTerminalDisplay* currentMultiTerminalDisplay
         , Qt::Orientation orientation
         , MultiTerminalDisplay* mtd1

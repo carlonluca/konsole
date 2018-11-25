@@ -202,6 +202,7 @@ public:
     static bool profileHasBlurEnabled(const Profile::Ptr profile);
 
     void removeCurrentTab();
+    void removeTab(TabbedViewContainer* container, int index);
 
 Q_SIGNALS:
     /** Emitted when the last view is removed from the view manager */

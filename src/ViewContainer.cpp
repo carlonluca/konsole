@@ -246,6 +246,7 @@ void TabbedViewContainer::addView(MultiTerminalDisplay *view, ViewProperties *it
     }
 
     // MultiTerminalDisplay is added here.
+#warning ViewProperties should probably be associated to a MultiTerminalDisplay.
     _navigation[view] = item;
     connect(item, &Konsole::ViewProperties::titleChanged, this,
             &Konsole::TabbedViewContainer::updateTitle);
@@ -306,9 +307,10 @@ void TabbedViewContainer::activatePreviousView()
 
 ViewProperties *TabbedViewContainer::viewProperties(MultiTerminalDisplay *view) const
 {
-    // TODO: Remove this cast if possible.
-    Q_ASSERT(_navigation.contains(view));
-    return _navigation[view];
+#warning ViewPropertis should be related to a MTD?
+    if(_navigation.contains(view))
+        return _navigation[view];
+    return nullptr;
 }
 
 QList<MultiTerminalDisplay*> TabbedViewContainer::widgetsForItem(ViewProperties *item) const
@@ -453,11 +455,9 @@ void TabbedViewContainer::updateIcon(ViewProperties *item)
     }
 }
 
-void TabbedViewContainer::closeTerminalTab(int idx) {
-    qFatal("Implementation missing");
-    auto currWidget = widget(idx);
-    //auto controller = qobject_cast<SessionController *>(_navigation[currWidget]);
-    //controller->closeSession();
+void TabbedViewContainer::closeTerminalTab(int idx)
+{
+    _connectedViewManager->removeTab(this, idx);
 }
 
 ViewManager *TabbedViewContainer::connectedViewManager()

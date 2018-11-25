@@ -440,6 +440,8 @@ void ViewManager::detachView(TabbedViewContainer *container, QWidget *view)
 
 void ViewManager::sessionFinished()
 {
+    qDebug() << "Session finished" << sender();
+
     // if this slot is called after the view manager's main widget
     // has been destroyed, do nothing
     if (_viewSplitter.isNull()) {
@@ -456,14 +458,13 @@ void ViewManager::sessionFinished()
         if (_sessionMap[view] == session) {
             _sessionMap.remove(view);
 
+
             // Find the MTD containing this TD. This approach assumes the TD is always
             // a child of the MTD.
             if (view->parent()) {
                 MultiTerminalDisplay* mtd = qobject_cast<MultiTerminalDisplay*>(view->parent());
                 if (mtd) {
-                    // Determine if no children is available.
-                    if (!mtd->count())
-                        _mtdManager->removeTerminalDisplay(mtd);
+                    _mtdManager->removeTerminalDisplay(mtd);
                 }
             }
 
@@ -812,8 +813,7 @@ void ViewManager::createMultiTerminalView(Qt::Orientation orientation)
     MultiTerminalDisplay* containerMtd = qobject_cast<MultiTerminalDisplay*>(_viewSplitter->activeContainer()->currentWidget());
     MultiTerminalDisplay* multiTerminalDisplay = _mtdManager->getFocusedMultiTerminalDisplay(containerMtd);
 
-    _mtdManager->addTerminalDisplay(display, session, multiTerminalDisplay, orientation);
-
+    _mtdManager->addTerminalDisplay(display, multiTerminalDisplay, orientation);
 
     session->setDarkBackground(colorSchemeForProfile(profile)->hasDarkBackground());
 
@@ -822,7 +822,6 @@ void ViewManager::createMultiTerminalView(Qt::Orientation orientation)
 
 TabbedViewContainer *ViewManager::createContainer()
 {
-
     auto *container = new TabbedViewContainer(this, _viewSplitter);
     container->setNavigationVisibility(_navigationVisibility);
     //TODO: Fix Detaching.
@@ -1096,14 +1095,16 @@ QList<ViewProperties *> ViewManager::viewProperties() const
 
     list.reserve(container->count());
 
-#warning Implementation missing
-#if 0
-    foreach (TerminalDisplay* view, _mtdManager->getTerminalDisplays()) {
-        ViewProperties *properties = container->viewProperties(view);
-        Q_ASSERT(properties);
-        list << properties;
+    QList<TerminalDisplay*> views = _mtdManager->getTerminalDisplays();
+    foreach (TerminalDisplay* view, views) {
+        // lcarlon: improve this approach.
+        MultiTerminalDisplay* mtd = qobject_cast<MultiTerminalDisplay*>(view->parent());
+        if (mtd) {
+            ViewProperties* properties = container->viewProperties(mtd);
+            if (properties)
+                list << properties;
+        }
     }
-#endif
 
     return list;
 }
@@ -1348,8 +1349,29 @@ QList<TerminalDisplay*> ViewManager::getTerminalsFromContainer(TabbedViewContain
 
 void ViewManager::removeCurrentTab()
 {
-    QWidget* w = _viewSplitter->activeContainer()->currentWidget();
-    w->deleteLater();
+    TabbedViewContainer* container = _viewSplitter->activeContainer();
+    if (!container)
+        return;
+
+    int selected = container->currentIndex();
+    if (selected < 0)
+        return;
+
+    removeTab(container, selected);
+}
+
+void ViewManager::removeTab(TabbedViewContainer *container, int index)
+{
+    QWidget* w = container->widget(index);
+    if (!w)
+        return;
+
+    MultiTerminalDisplay* mtd = qobject_cast<MultiTerminalDisplay*>(w);
+    if (!mtd)
+        return;
+
+    //_mtdManager->removeTerminalDisplay(mtd);
+    _mtdManager->dismissMultiTerminals(mtd);
 }
 
 void ViewManager::setNavigationBehavior(int behavior)
