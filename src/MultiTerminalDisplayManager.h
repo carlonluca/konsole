@@ -26,6 +26,7 @@
 #include <QObject>
 #include <QSet>
 #include <QSplitter>
+#include <QDebug>
 
 namespace Konsole
 {
@@ -42,7 +43,7 @@ class MultiTerminalDisplay : public QSplitter
 {
     Q_OBJECT
 public:
-    MultiTerminalDisplay(QWidget* parent = nullptr) : QSplitter(parent) {}
+    MultiTerminalDisplay(QWidget* parent = nullptr) : QSplitter(parent) { qDebug() << "Create MTD" << this; }
     ~MultiTerminalDisplay() override;
 };
 

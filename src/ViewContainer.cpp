@@ -389,6 +389,8 @@ void TabbedViewContainer::openTabContextMenu(const QPoint &point)
 void TabbedViewContainer::currentTabChanged(int index)
 {
     setCurrentIndex(index);
+
+    qDebug() << "Current mtd:" << widget(index);
     if (widget(index) != nullptr) {
         emit activeViewChanged(widget(index));
     }

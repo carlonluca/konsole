@@ -45,7 +45,7 @@ namespace Konsole
 
 MultiTerminalDisplay::~MultiTerminalDisplay()
 {
-    qDebug() << Q_FUNC_INFO;
+    qDebug() << Q_FUNC_INFO << this;
 }
 
 QSet< MultiTerminalDisplay* > MultiTerminalDisplayTree::getLeaves() const
@@ -226,6 +226,7 @@ MultiTerminalDisplay* MultiTerminalDisplayManager::createRootTerminalDisplay(Ter
 
     // We want to know when this object will get focus
     mtd->installEventFilter(this);
+    qDebug() << "Creating root terminal display" << mtd;
 
     if (terminalDisplay)
         combineMultiTerminalDisplayAndTerminalDisplay(mtd, terminalDisplay);
@@ -343,6 +344,7 @@ MultiTerminalDisplay* MultiTerminalDisplayManager::removeTerminalDisplay(MultiTe
             }
         }
         // Set the focus
+        sibling->installEventFilter(this);
         setFocusToLeaf(sibling, tree);
     }
 
