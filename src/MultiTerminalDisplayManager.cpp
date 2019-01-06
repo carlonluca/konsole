@@ -478,7 +478,6 @@ void MultiTerminalDisplayManager::dismissMultiTerminals(MultiTerminalDisplay* mu
     _trees.remove(multiTerminalDisplay);
     _treeToContainer.remove(tree);
 
-#warning This part should be checked
     Q_ASSERT(tree->getNumberOfNodes() == 0);
     Q_ASSERT(_trees.values().contains(tree) == false);
 
