@@ -280,8 +280,9 @@ void MultiTerminalDisplayManager::addTerminalDisplay(TerminalDisplay* terminalDi
 MultiTerminalDisplay* MultiTerminalDisplayManager::removeTerminalDisplay(MultiTerminalDisplay* mtd)
 {
     // lcarlon: I'd prefer this was not needed.
-    if (!_mtdContent.contains(mtd))
+    if (!_mtdContent.contains(mtd)) {
         return nullptr;
+    }
 
     // Close the Terminal Display
     TerminalDisplay* removeTd = _mtdContent[mtd];
@@ -348,9 +349,15 @@ MultiTerminalDisplay* MultiTerminalDisplayManager::removeTerminalDisplay(MultiTe
         setFocusToLeaf(sibling, tree);
     }
 
-    _trees.remove(mtd);
-    delete mtd;
-    delete parent; // could be null
+    if (mtd) {
+        _trees.remove(mtd);
+        delete mtd;
+    }
+
+    if (parent) {
+        _trees.remove(parent);
+        delete parent;
+    }
 
     return sibling;
 
@@ -460,9 +467,6 @@ bool MultiTerminalDisplayManager::isRootNode(MultiTerminalDisplay* mtd) const
 
 void MultiTerminalDisplayManager::dismissMultiTerminals(MultiTerminalDisplay* multiTerminalDisplay)
 {
-    if (!_trees.contains(multiTerminalDisplay))
-        return;
-
     MultiTerminalDisplayTree* tree = _trees[multiTerminalDisplay];
     QSet<MultiTerminalDisplay*> leaves = tree->getLeaves();
 
@@ -476,7 +480,7 @@ void MultiTerminalDisplayManager::dismissMultiTerminals(MultiTerminalDisplay* mu
 
 #warning This part should be checked
     Q_ASSERT(tree->getNumberOfNodes() == 0);
-    //Q_ASSERT(_trees.values().contains(tree) == false);
+    Q_ASSERT(_trees.values().contains(tree) == false);
 
     qDebug() << "Trees:" << _trees;
 

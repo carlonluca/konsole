@@ -788,6 +788,10 @@ void ViewManager::createView(Session *session)
 void ViewManager::createMultiTerminalView(Qt::Orientation orientation)
 {
     qDebug() << "ViewManager::createMultiTerminalView";
+    MultiTerminalDisplay* containerMtd = qobject_cast<MultiTerminalDisplay*>(_viewSplitter->activeContainer()->currentWidget());
+    MultiTerminalDisplay* multiTerminalDisplay = _mtdManager->getFocusedMultiTerminalDisplay(containerMtd);
+    if (!multiTerminalDisplay)
+        return;
 
     QString currentWorkingDir = activeViewController()->currentDir();
 
@@ -809,9 +813,6 @@ void ViewManager::createMultiTerminalView(Qt::Orientation orientation)
     _sessionMap[display] = session;
     session->addView(display);
     createController(session, display);
-
-    MultiTerminalDisplay* containerMtd = qobject_cast<MultiTerminalDisplay*>(_viewSplitter->activeContainer()->currentWidget());
-    MultiTerminalDisplay* multiTerminalDisplay = _mtdManager->getFocusedMultiTerminalDisplay(containerMtd);
 
     _mtdManager->addTerminalDisplay(display, multiTerminalDisplay, orientation);
 
